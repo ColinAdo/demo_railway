@@ -35,7 +35,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS','localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS','localhost,127.0.0.1,deluxeadore.up.railway.app').split(',')
 
 # Application definition
 
@@ -82,26 +82,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-CSRF_TRUSTED_ORIGIN = os.getenv('CSRF_TRUSTED_ORIGIN')
+CSRF_TRUSTED_ORIGIN = ['https://deluxeadore.up.railway.app']
+# CSRF_TRUSTED_ORIGIN = os.getenv('CSRF_TRUSTED_ORIGIN')
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {}
 
-if DEBUG:
-   DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+
+POSTGRES_LOCALLY = False
+if DEVELOPMENT_MODE == False or POSTGRES_LOCALLY == True:
+    DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
 else:
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL')
-        )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
